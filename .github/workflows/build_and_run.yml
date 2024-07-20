@@ -40,8 +40,6 @@ jobs:
               with:
                 node-version: "20"
             - uses: actions/download-artifact@v4
-              with:
-                path: dist
             - run: ls -al dist
             - run: npm start
     run_with_tmpdir_env:
@@ -53,8 +51,6 @@ jobs:
               with:
                 node-version: "20"
             - uses: actions/download-artifact@v4
-              with:
-                path: dist
             - run: npm start
               env:
                 TMPDIR: ${{ runner.temp }}
