@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp } from "fs/promises";
+import { mkdir, mkdtemp, writeFile } from "fs/promises";
 import { tmpdir } from "os";
 import { join } from "path";
 
@@ -7,8 +7,9 @@ async function main() {
     const tmpDir = tmpdir();
     console.log("tmpdir(): ", tmpDir);
     const directory = await mkdtemp(join(tmpDir, "test-"));
-    console.log("create directory: ", directory);
-    await mkdir(directory);
+    console.log("directory: ", directory);
+
+    await writeFile(join(directory, "output.txt"), "Some text");
 }
 
 main();
