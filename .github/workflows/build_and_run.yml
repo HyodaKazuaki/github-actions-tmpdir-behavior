@@ -42,6 +42,7 @@ jobs:
             - uses: actions/download-artifact@v4
               with:
                 path: dist
+            - run: ls -al
             - run: npm start
     run_with_tmpdir_env:
         needs: build
