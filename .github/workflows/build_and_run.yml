@@ -1,0 +1,53 @@
+name: Build and run PoC
+on:
+    push:
+        branches:
+            - "main"
+    workflow_dispatch:
+
+jobs:
+    build:
+        runs-on: ubuntu-22.04
+        steps:
+            - uses: actions/checkout@v4
+            - uses: pnpm/action-setup@v4
+              with:
+                run_install: false
+            - uses: actions/setup-node@v4
+              with:
+                node-version: "20"
+                cache: "pnpm"
+            - run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+            - uses: actions/cache@v4
+              with:
+                path: ${{ env.GITHUB_ENV }}
+                key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+                restore-keys: ${{ runner.os }}-pnpm-store-
+            - run: pnpm install
+            - run: pnpm build
+            - uses: actions/upload-artifact@v4
+              with:
+                path: dist
+
+    run_with_no_tmpdir_env:
+        needs: build
+        runs-on: ubuntu-22.04
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                node-version: "20"
+            - uses: actions/download-artifact@v4
+            - run: npm start
+    run_with_tmpdir_env:
+        needs: build
+        runs-on: ubuntu-22.04
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                node-version: "20"
+            - uses: actions/download-artifact@v4
+            - run: npm start
+              env:
+                TMPDIR: ${{ runner.temp }}
